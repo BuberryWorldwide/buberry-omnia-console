@@ -1,0 +1,21 @@
+{
+  "name": "Buberry World Founders Card",
+  "creator": "Buberry Worldwide",
+  "description": "The first-ever NFT in the Buberry World series, representing the foundation of a revolutionary initiative. This unique ASCII artwork card symbolizes the origins of Buberry and provides gameplay bonuses in future releases.",
+  "image": "https://ipfs.io/ipfs/bafybeial7je4d3pattwldeo46b2ffdqabghgaigvnx3dyx3zlxsmjkrh7i/founders-card.png",
+  "type": "image/png",
+  "files": [
+    {
+      "uri": "https://ipfs.io/ipfs/bafybeial7je4d3pattwldeo46b2ffdqabghgaigvnx3dyx3zlxsmjkrh7i/founders-card.png",
+      "is_default_file": true,
+      "type": "image/png"
+    }
+  ],
+  "properties": {
+    "Artwork Type": "ASCII",
+    "Edition": "Founders Edition",
+    "Use Case": "Gameplay multiplier and collectible",
+    "Special Trait": "Historic Artifact",
+    "Created By": "Buberry Worldwide"
+  }
+}

@@ -8,3 +8,4 @@ export const networkConfig: NetworkConfigs = {
     chainId: "0x128",
   }
 }
+

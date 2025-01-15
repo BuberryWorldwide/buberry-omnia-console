@@ -1,0 +1,19 @@
+{
+  "name": "Founders' Fertile Valley ",
+  "description": "A lush valley known for its fertile soil and abundant water resources. This region offers high potential for sustainable agriculture and experimental farming.",
+  "artwork_type": "ASCII",
+  "edition": "Special Edition",
+  "use_case": "Agricultural Development",
+  "special_trait": "High Fertility and Abundant Water",
+  "created_by": "Buberry Worldwide",
+  "image": "https://bafybeib6hybpbbntyyxbtnzjobp62evkx3lmzen5yad4trybda6kwf432a.ipfs.w3s.link/fertile_valley_resource.png",
+  "type": "Land",
+  "properties": {
+    "biome": "Temperate",
+    "fertility": 10,
+    "water_availability": "Abundant",
+    "degradation": 1,
+    "plots": 12,
+    "creator": "Buberry Worldwide"
+  }
+}

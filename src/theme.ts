@@ -11,3 +11,5 @@ export const theme = createTheme({
     }
   }
 });
+
+export type ThemeName = keyof typeof theme; // 'dark' | 'light' | 'retro'

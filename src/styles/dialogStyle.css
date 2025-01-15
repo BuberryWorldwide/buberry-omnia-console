@@ -1,0 +1,17 @@
+.custom-dialog {
+    background-color: rgba(16, 16, 16, 0.9) !important; /* Transparent dark gray */
+    color: #00FF00 !important; /* Bright green text */
+    border: 1px solid #00FF00 !important; /* Green border */
+    border-radius: 8px !important; /* Rounded corners */
+    box-shadow: 0 0 15px #00FF00 !important; /* Subtle green glow */
+    padding: 16px !important; /* Padding inside the dialog */
+  }
+  
+
+  .custom-container {
+    background-color: "rgba(0, 0, 0, 0.65)",
+}
+
+.custom-description {
+    font-weight: bold;
+}

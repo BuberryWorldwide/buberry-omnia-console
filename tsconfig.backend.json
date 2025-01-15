@@ -1,0 +1,14 @@
+{
+    "compilerOptions": {
+      "target": "ESNext",
+      "module": "CommonJS", // Use CommonJS for compatibility
+      "moduleResolution": "Node",
+      "esModuleInterop": true,
+      "strict": true,
+      "outDir": "./dist/backend", // Compiled files will go here
+      "resolveJsonModule": true
+    },
+    "include": ["api/**/*.ts"], // Include backend files only
+    "exclude": ["node_modules", "src"] // Exclude frontend files
+  }
+  
