@@ -1,0 +1,18 @@
+{
+  "version": "1.0.0",
+  "type": "Tree",
+  "name": "Tree Card",
+  "description": "Tree Card",
+  "image": "",
+  "cardType": "Tree",
+  "properties": {
+    "Artwork Type": "",
+    "Edition": "",
+    "Use Case": "",
+    "Special Trait": "",
+    "variety": "Apple",
+    "stage": "Sapling",
+    "water_consumption": 5,
+    "carbon_sequestration": 1
+  }
+}

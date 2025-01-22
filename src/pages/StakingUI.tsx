@@ -21,6 +21,8 @@ import { MirrorNodeClient } from "../services/wallets/mirrorNodeClient";
 import { appConfig } from "../config";
 import axios from "axios"; // Import Axios for server communication
 import "../styles/dialogStyle.css";
+import { v4 as uuidv4 } from "uuid";
+
 
 interface Token {
   token_id: string;
@@ -33,6 +35,8 @@ interface Plot {
 }
 
 interface LandStaking {
+  instanceId: string; // Unique identifier for each land card instance
+
   land: Token;
   plots: Plot[];
 }
@@ -42,11 +46,105 @@ const StakingUI: React.FC = () => {
   const [tokens, setTokens] = useState<Token[]>([]);
   const [landStakings, setLandStakings] = useState<LandStaking[]>([]);
   const [selectedLandToken, setSelectedLandToken] = useState<Token | null>(null);
-  const [selectedPlot, setSelectedPlot] = useState<{ landIndex: number; plotIndex: number } | null>(
+  const [selectedPlot, setSelectedPlot] = useState<{ instanceId: string; plotIndex: number } | null>(
     null
   );
   const [tokenSelectionOpen, setTokenSelectionOpen] = useState(false);
   const [compatibleTokens, setCompatibleTokens] = useState<Token[]>([]);
+
+
+  const groupTokensByType = (tokens: Token[]) => {
+    return tokens.reduce((groups, token) => {
+      const type = token.metadata.type || "Unknown";
+      if (!groups[type]) {
+        groups[type] = [];
+      }
+      groups[type].push(token);
+      return groups;
+    }, {} as Record<string, Token[]>);
+  };
+
+  const handleStakeLogic = async () => {
+    if (!selectedPlot || compatibleTokens.length === 0) {
+      console.warn("No token selected or plot not available for staking.");
+      return;
+    }
+  
+    const selectedToken = compatibleTokens[0]; // Use the first compatible token (or allow user to choose)
+    try {
+      // Example: Interact with staking smart contract
+      console.log("Initiating staking process for token:", selectedToken);
+  
+      // Add custom staking contract interaction logic here
+      // e.g., await stakingContract.stake(selectedPlot, selectedToken);
+  
+      // Update land staking state
+      const updatedStakings = landStakings.map((staking) => {
+        if (staking.instanceId === selectedPlot.instanceId) {
+          staking.plots[selectedPlot.plotIndex] = { token_id: selectedToken.token_id };
+        }
+        return staking;
+      });
+  
+      setLandStakings(updatedStakings);
+  
+      // Update token balances
+      setTokens((prevTokens) =>
+        prevTokens.map((token) =>
+          token.token_id === selectedToken.token_id
+            ? { ...token, balance: token.balance - 1 }
+            : token
+        )
+      );
+  
+      console.log("Staking successful!");
+      setTokenSelectionOpen(false);
+      setSelectedPlot(null);
+  
+      // Optional: Reward disbursement
+      await handleRewardDisbursement(selectedToken.token_id);
+    } catch (error) {
+      console.error("Error during staking:", error);
+    }
+  };
+  
+  const handleRewardDisbursement = async (tokenId: string) => {
+    try {
+      const rewardAmount = calculateReward(tokenId); // Implement your reward calculation logic
+  
+      // Example: Transfer reward tokens from a treasury
+      console.log(`Disbursing ${rewardAmount} Carbon Points for token ${tokenId}`);
+  
+      // Add logic to interact with your treasury or reward distribution smart contract here
+      // e.g., await rewardContract.transfer(accountId, rewardAmount);
+  
+      console.log("Rewards successfully disbursed!");
+    } catch (error) {
+      console.error("Error disbursing rewards:", error);
+    }
+  };
+  
+  // Example reward calculation function
+  const calculateReward = (tokenId: string): number => {
+    // Simple reward calculation based on token properties (customize as needed)
+    const token = tokens.find((t) => t.token_id === tokenId);
+    if (!token) return 0;
+  
+    const sequestration = token.metadata.properties?.carbon_sequestration || 0;
+    return sequestration * 10; // Example: 10 points per sequestration unit
+  };
+  
+
+  
+  const [categorizedTokens, setCategorizedTokens] = useState<Record<string, Token[]>>({});
+  
+// Update the `fetchTokens` useEffect to categorize tokens after fetching
+useEffect(() => {
+  const categorizeTokens = () => {
+    setCategorizedTokens(groupTokensByType(tokens));
+  };
+  categorizeTokens();
+}, [tokens]);
 
   // Load state from the server on mount
   useEffect(() => {
@@ -82,6 +180,7 @@ const StakingUI: React.FC = () => {
       saveState();
     }
   }, [tokens, landStakings]);
+
 
   useEffect(() => {
     if (!accountId) return;
@@ -128,112 +227,194 @@ const StakingUI: React.FC = () => {
     fetchTokens();
   }, [accountId]);
 
+
   const handleLandSelect = (token: Token) => {
     if (token.metadata.type === "Land") {
-      const numPlots = token.metadata.properties.plots || 0;
-      const newPlots = Array(numPlots).fill({ token_id: null });
-      setLandStakings((prev) => [...prev, { land: token, plots: newPlots }]);
+      // Check for `capacity` or `plots` to determine the number of plots
+      const numPlots =
+        parseInt(token.metadata.properties.capacity, 10) ||
+        parseInt(token.metadata.properties.plots, 10) ||
+        0; // Default to 0 if neither is present
+  
+      if (isNaN(numPlots) || numPlots <= 0) {
+        console.error("Invalid number of plots for Land token:", token);
+        return;
+      }
+  
+      const newPlots = Array(numPlots).fill({ token_id: null }); // Initialize empty plots
+  
+      console.log("Initialized Plots for Land Token:", {
+        token,
+        numPlots,
+        newPlots,
+      });
+  
+      const instanceId = uuidv4(); // Unique ID for each instance
+  
+      setLandStakings((prev) => [
+        ...prev,
+        { instanceId, land: token, plots: newPlots },
+      ]);
+  
       setTokens((prev) =>
-        prev.map((t) => (t.token_id === token.token_id ? { ...t, balance: t.balance - 1 } : t))
+        prev.map((t) =>
+          t.token_id === token.token_id ? { ...t, balance: t.balance - 1 } : t
+        )
       );
+  
       setSelectedLandToken(null);
     }
   };
+  
+  
 
-  const handlePlotClick = (landIndex: number, plotIndex: number) => {
-    const allowedTypes = landStakings[landIndex].land.metadata.allowed_stakes || [];
+  const handlePlotClick = (instanceId: string, plotIndex: number) => {
+    const staking = landStakings.find((ls) => ls.instanceId === instanceId);
+    if (!staking) {
+      console.warn("Staking instance not found for instanceId:", instanceId);
+      return;
+    }
+  
+    // Retrieve allowed stakes
+    const allowedTypes = staking.land.metadata.properties?.allowed_stakes || [];
+    console.log("Allowed Types for Land:", allowedTypes);
+  
+    // Filter tokens based on allowed types
     const compatible = tokens.filter(
       (token) => allowedTypes.includes(token.metadata.type) && token.balance > 0
     );
+    console.log("Compatible Tokens for Plot:", compatible);
+  
+    // Update state
     setCompatibleTokens(compatible);
-    setSelectedPlot({ landIndex, plotIndex });
+    setSelectedPlot({ instanceId, plotIndex });
     setTokenSelectionOpen(true);
   };
+  
 
   const handleStakeToken = (token: Token) => {
     if (!selectedPlot) return;
-
-    const updatedStakings = [...landStakings];
-    updatedStakings[selectedPlot.landIndex].plots[selectedPlot.plotIndex] = {
-      token_id: token.token_id,
-    };
-
+  
+    // Update the landStakings with the staked token
+    const updatedStakings = landStakings.map((staking) => {
+      if (staking.instanceId === selectedPlot.instanceId) {
+        staking.plots[selectedPlot.plotIndex] = { token_id: token.token_id };
+      }
+      return staking;
+    });
+  
+    // Update state for landStakings and tokens
     setLandStakings(updatedStakings);
     setTokens((prev) =>
-      prev.map((t) => (t.token_id === token.token_id ? { ...t, balance: t.balance - 1 } : t))
+      prev.map((t) =>
+        t.token_id === token.token_id ? { ...t, balance: t.balance - 1 } : t
+      )
     );
+  
+    // Reset state for token selection
     setTokenSelectionOpen(false);
     setSelectedPlot(null);
   };
+  
 
-  const handlePlotRemove = (landIndex: number, plotIndex: number) => {
-    const token_id = landStakings[landIndex].plots[plotIndex].token_id;
+
+  const handlePlotRemove = (instanceId: string, plotIndex: number) => {
+    const staking = landStakings.find((ls) => ls.instanceId === instanceId);
+    if (!staking) return;
+  
+    const token_id = staking.plots[plotIndex]?.token_id;
     if (!token_id) return;
-
-    const updatedStakings = [...landStakings];
-    updatedStakings[landIndex].plots[plotIndex] = { token_id: null };
+  
+    const updatedStakings = landStakings.map((ls) =>
+      ls.instanceId === instanceId
+        ? {
+            ...ls,
+            plots: ls.plots.map((plot, index) =>
+              index === plotIndex ? { token_id: null } : plot
+            ),
+          }
+        : ls
+    );
+  
     setLandStakings(updatedStakings);
-
     setTokens((prev) =>
       prev.map((t) => (t.token_id === token_id ? { ...t, balance: t.balance + 1 } : t))
     );
   };
+  
 
-  const handleRemoveLand = (landIndex: number) => {
-    const land = landStakings[landIndex].land;
-    const plotsInUse = landStakings[landIndex].plots.some((plot) => plot.token_id !== null);
-
+  const handleRemoveLand = (instanceId: string) => {
+    const staking = landStakings.find((ls) => ls.instanceId === instanceId);
+    if (!staking) return;
+  
+    const plotsInUse = staking.plots.some((plot) => plot.token_id !== null);
     if (plotsInUse) return;
-
-    setLandStakings((prev) => prev.filter((_, index) => index !== landIndex));
+  
+    const updatedStakings = landStakings.filter((ls) => ls.instanceId !== instanceId);
+  
+    setLandStakings(updatedStakings);
     setTokens((prev) =>
-      prev.map((t) => (t.token_id === land.token_id ? { ...t, balance: t.balance + 1 } : t))
+      prev.map((t) =>
+        t.token_id === staking.land.token_id ? { ...t, balance: t.balance + 1 } : t
+      )
     );
   };
+  
 
   const isLandRemovable = (plots: Plot[]) => plots.every((plot) => !plot.token_id);
 
   return (
     <Box display="flex" height="100vh">
+      {/* Sidebar with categorized tokens */}
       <Box width="25%" borderRight="1px dashed grey" padding={2} overflow="auto">
         <Typography variant="h6" gutterBottom>
-          Tokens
+          Tokens by Type
         </Typography>
-        <List>
-          {tokens
-            .filter((token) => token.metadata.type === "Land")
-            .map((token) => (
-              <ListItem
-                key={token.token_id}
-                button
-                onClick={() => setSelectedLandToken(token)}
-              >
-                <ListItemText
-                  primary={token.metadata?.name ?? "Unknown Name"}
-                  secondary={`Balance: ${token.balance}`}
-                />
-              </ListItem>
-            ))}
-        </List>
-      </Box>
-
-      <Box width="75%" padding={2} overflow="auto">
-        {landStakings.map((staking, landIndex) => (
-          <Accordion key={staking.land.token_id}>
+        {Object.keys(categorizedTokens).map((type) => (
+          <Accordion key={type}>
             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-              <Typography>{staking.land.metadata.name}</Typography>
+              <Typography>{type}</Typography>
             </AccordionSummary>
             <AccordionDetails>
-              <Typography>{staking.land.metadata.description}</Typography>
+              <List>
+                {categorizedTokens[type].map((token) => (
+                  <ListItem
+                    key={token.token_id}
+                    button
+                    onClick={() => setSelectedLandToken(token)}
+                  >
+                    <ListItemText
+                      primary={token.metadata.name || "Unnamed Token"}
+                      secondary={`Balance: ${token.balance}`}
+                    />
+                  </ListItem>
+                ))}
+              </List>
+            </AccordionDetails>
+          </Accordion>
+        ))}
+      </Box>
+  
+      {/* Land staking details */}
+      <Box width="75%" padding={2} overflow="auto">
+        {landStakings.map((staking) => (
+          <Accordion key={staking.instanceId}>
+            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+              <Typography>{staking.land.metadata?.name || "Unnamed Land"}</Typography>
+            </AccordionSummary>
+            <AccordionDetails>
+              <Typography>
+                {staking.land.metadata?.description || "No description available"}
+              </Typography>
               <Box
                 display="grid"
                 gridTemplateColumns="repeat(4, 1fr)"
                 gap={2}
                 marginTop={2}
               >
-                {staking.plots.map((plot, plotIndex) => (
+                {staking.plots.map((plot, index) => (
                   <Box
-                    key={plotIndex}
+                    key={`${staking.instanceId}-${index}`}
                     height="100px"
                     border={plot.token_id ? "1px solid #ccc" : "2px dashed #00ff00"}
                     display="flex"
@@ -241,8 +422,8 @@ const StakingUI: React.FC = () => {
                     justifyContent="center"
                     onClick={() =>
                       plot.token_id
-                        ? handlePlotRemove(landIndex, plotIndex)
-                        : handlePlotClick(landIndex, plotIndex)
+                        ? handlePlotRemove(staking.instanceId, index)
+                        : handlePlotClick(staking.instanceId, index)
                     }
                     style={{ cursor: "pointer" }}
                   >
@@ -254,7 +435,7 @@ const StakingUI: React.FC = () => {
                 <Button
                   variant="outlined"
                   color="secondary"
-                  onClick={() => handleRemoveLand(landIndex)}
+                  onClick={() => handleRemoveLand(staking.instanceId)}
                   sx={{ marginTop: 2 }}
                 >
                   Remove Land Card
@@ -264,155 +445,169 @@ const StakingUI: React.FC = () => {
           </Accordion>
         ))}
       </Box>
-
-      <Dialog
-  open={!!selectedLandToken}
-  onClose={() => setSelectedLandToken(null)}
-  maxWidth="lg"
->
-<DialogTitle
-  sx={{
-    fontWeight: "bold",
-    fontSize: "1.5rem",
-    textAlign: "center",
-  }}
->
-    <Box className="custom-container" sx={{ padding: "16px", borderRadius: "8px" }}>
-      {selectedLandToken?.metadata?.name ?? "Unknown Land Card"}
-    </Box>
   
-  </DialogTitle>
-  <DialogContent
-  sx={{
-    display: "flex",
-    flexWrap: "wrap", // Ensure wrapping on smaller screens
-    gap: 2,
-  }}
->
-  {/* Left: Metadata Information */}
-  <Box
-    className="metadata-container"
-    sx={{
-      flex: 1, // Allow it to share space with the image
-      minWidth: "300px", // Set a minimum width for responsiveness
-      maxWidth: "50%", // Prevent it from taking more than half of the space
-      backgroundColor: "rgba(0, 0, 0, 0.65)",
-      color: "white",
-      padding: "16px",
-      borderRadius: "8px",
-      border: "1px solid #ccc",
-    }}
-  >
-    <Typography sx={{ marginBottom: "8px", fontSize: "1.2rem" }}>
-      <strong>Description:</strong> {selectedLandToken?.metadata?.description ?? "N/A"}
-    </Typography>
-    <Typography sx={{ marginBottom: "8px" }}>
-      <strong>Edition:</strong> {selectedLandToken?.metadata?.edition ?? "N/A"}
-    </Typography>
-    <Typography sx={{ marginBottom: "8px" }}>
-      <strong>Use Case:</strong> {selectedLandToken?.metadata?.use_case ?? "N/A"}
-    </Typography>
-    <Typography sx={{ marginBottom: "8px" }}>
-      <strong>Special Trait:</strong> {selectedLandToken?.metadata?.special_trait ?? "N/A"}
-    </Typography>
-    <Typography sx={{ marginBottom: "8px" }}>
-      <strong>Created By:</strong> {selectedLandToken?.metadata?.created_by ?? "N/A"}
-    </Typography>
-    <Typography sx={{ marginTop: "16px", fontWeight: "bold" }}>Properties:</Typography>
-    <Box sx={{ marginLeft: 2 }}>
-      {selectedLandToken?.metadata?.properties
-        ? Object.entries(selectedLandToken.metadata.properties).map(([key, value]) => (
-            <Typography key={key} sx={{ fontSize: "0.9rem", marginBottom: "4px" }}>
-              <strong>{key}:</strong> {String(value ?? "N/A")}
+      {/* Dialog for placing land cards */}
+      <Dialog
+        open={!!selectedLandToken}
+        onClose={() => setSelectedLandToken(null)}
+        maxWidth="lg"
+      >
+        {/* Dialog content for land card details */}
+        <DialogTitle
+          sx={{
+            fontWeight: "bold",
+            fontSize: "1.5rem",
+            textAlign: "center",
+          }}
+        >
+          <Box
+            className="custom-container"
+            sx={{ padding: "16px", borderRadius: "8px" }}
+          >
+            {selectedLandToken?.metadata?.name ?? "Unknown Land Card"}
+          </Box>
+        </DialogTitle>
+        <DialogContent
+          sx={{
+            display: "flex",
+            flexWrap: "wrap",
+            gap: 2,
+          }}
+        >
+          {/* Metadata information */}
+          <Box
+            className="metadata-container"
+            sx={{
+              flex: 1,
+              minWidth: "300px",
+              maxWidth: "50%",
+              backgroundColor: "rgba(0, 0, 0, 0.65)",
+              color: "white",
+              padding: "16px",
+              borderRadius: "8px",
+              border: "1px solid #ccc",
+            }}
+          >
+            {/* Properties and metadata */}
+            {Object.entries(selectedLandToken?.metadata?.properties || {}).map(
+              ([key, value]) => (
+                <Typography key={key} sx={{ marginBottom: "4px" }}>
+                  <strong>{key}:</strong> {String(value ?? "N/A")}
+                </Typography>
+              )
+            )}
+          </Box>
+  
+          {/* Image section */}
+          <Box
+            sx={{
+              flex: 1,
+              minWidth: "300px",
+              maxWidth: "50%",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              backgroundColor: "rgba(0, 0, 0, 0.65)",
+              padding: "16px",
+              borderRadius: "8px",
+              position: "relative",
+            }}
+          >
+            <img
+              src={`/assets/nfts/${selectedLandToken?.token_id.replace(
+                /\./g,
+                "-"
+              )}.png`}
+              alt={`${selectedLandToken?.metadata?.name ?? "Unknown Token"}`}
+              style={{
+                maxWidth: "100%",
+                maxHeight: "300px",
+                borderRadius: "8px",
+              }}
+            />
+            <Typography
+              sx={{
+                position: "absolute",
+                bottom: "8px",
+                right: "8px",
+                backgroundColor: "rgba(0, 0, 0, 0.65)",
+                color: "white",
+                padding: "4px 8px",
+                borderRadius: "4px",
+                fontWeight: "bold",
+              }}
+            >
+              Balance: {selectedLandToken?.balance ?? 0}
             </Typography>
-          ))
-        : "No properties available"}
-    </Box>
-  </Box>
-
-  {/* Right: Image Section */}
-  <Box
-    sx={{
-      flex: 1, // Allow it to share space with the metadata
-      minWidth: "300px", // Ensure responsiveness
-      maxWidth: "50%", // Prevent it from taking more than half of the space
-      display: "flex",
-      justifyContent: "center",
-      alignItems: "center",
-      backgroundColor: "rgba(0, 0, 0, 0.65)",
-      padding: "16px",
-      borderRadius: "8px",
-      position: "relative",
-    }}
-  >
-    <img
-      src={`/assets/nfts/${selectedLandToken?.token_id.replace(/\./g, "-")}.png`}
-      alt={`${selectedLandToken?.metadata?.name ?? "Unknown Token"}`}
-      style={{
-        maxWidth: "100%",
-        maxHeight: "300px",
-        borderRadius: "8px",
-      }}
-    />
-    {/* Token Balance Overlay */}
-    <Typography
-      sx={{
-        position: "absolute",
-        bottom: "8px",
-        right: "8px",
-        backgroundColor: "rgba(0, 0, 0, 0.65)",
-        color: "white",
-        padding: "4px 8px",
-        borderRadius: "4px",
-        fontWeight: "bold",
-      }}
-    >
-      Balance: {selectedLandToken?.balance ?? 0}
-    </Typography>
-  </Box>
-</DialogContent>
-
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button
+            variant="outlined"
+            onClick={() => setSelectedLandToken(null)}
+          >
+            Cancel
+          </Button>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() =>
+              selectedLandToken && handleLandSelect(selectedLandToken)
+            }
+          >
+            Place Land Card
+          </Button>
+        </DialogActions>
+      </Dialog>
+  
+      {/* Dialog for selecting compatible tokens */}
+      <Dialog
+  open={tokenSelectionOpen}
+  onClose={() => setTokenSelectionOpen(false)}
+  aria-labelledby="dialog-title"
+  aria-describedby="dialog-description"
+>
+  <DialogTitle id="dialog-title">Select a Compatible Token</DialogTitle>
+  <DialogContent id="dialog-description">
+    {Object.keys(groupTokensByType(compatibleTokens)).map((type) => (
+      <Box key={type} sx={{ marginBottom: "16px" }}>
+        <Typography variant="subtitle1">{type}</Typography>
+        <List>
+          {groupTokensByType(compatibleTokens)[type].map((token) => (
+            <ListItem
+              key={token.token_id}
+              button
+              onClick={() => handleStakeToken(token)} // Update state for selected token
+            >
+              <ListItemText
+                primary={token.metadata.name}
+                secondary={`Balance: ${token.balance}`}
+              />
+            </ListItem>
+          ))}
+        </List>
+      </Box>
+    ))}
+  </DialogContent>
   <DialogActions>
-    <Button
-      variant="outlined"
-      onClick={() => setSelectedLandToken(null)}
-    >
-      Cancel
-    </Button>
     <Button
       variant="contained"
       color="primary"
-      onClick={() => selectedLandToken && handleLandSelect(selectedLandToken)}
+      onClick={() => {
+        if (selectedPlot) {
+          handleStakeLogic();
+        }
+      }}
     >
-      Place Land Card
+      Stake
     </Button>
+    <Button onClick={() => setTokenSelectionOpen(false)}>Cancel</Button>
   </DialogActions>
 </Dialog>
 
-
-      <Dialog
-        open={tokenSelectionOpen}
-        onClose={() => setTokenSelectionOpen(false)}
-      >
-        <DialogTitle>Select a Compatible Token</DialogTitle>
-        <DialogContent>
-          <List>
-            {compatibleTokens.map((token) => (
-              <ListItem key={token.token_id} button onClick={() => handleStakeToken(token)}>
-                <ListItemText
-                  primary={token.metadata.name}
-                  secondary={`Balance: ${token.balance}`}
-                />
-              </ListItem>
-            ))}
-          </List>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setTokenSelectionOpen(false)}>Cancel</Button>
-        </DialogActions>
-      </Dialog>
     </Box>
   );
+  
 };
 
 export default StakingUI;

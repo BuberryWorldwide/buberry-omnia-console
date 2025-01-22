@@ -1,0 +1,28 @@
+{
+  "version": "1.0.0",
+  "type": "Land",
+  "name": "Test Land Allowed Stakes",
+  "description": "Test Land Allowed Stakes",
+  "properties": {
+    "Artwork Type": "Test Land Allowed Stakes",
+    "Edition": "Test Land Allowed Stakes",
+    "Use Case": "Test Land Allowed Stakes",
+    "Special Trait": "Test Land Allowed Stakes",
+    "allowed_stakes": [
+      "Tree",
+      "Shrub",
+      "Crop",
+      "Structure",
+      "Livestock",
+      "Tool",
+      "Person"
+    ],
+    "biome": "Temperate",
+    "fertility": 5,
+    "water_availability": "Medium",
+    "degradation": 5,
+    "capacity": "6",
+    "boosts_from": "Test Land Allowed Stakes",
+    "actions": "Test Land Allowed Stakes"
+  }
+}

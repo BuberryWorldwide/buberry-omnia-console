@@ -1,0 +1,43 @@
+const express = require("express");
+const fs = require("fs");
+const path = require("path");
+
+const app = express();
+app.use(express.json()); // Middleware for parsing JSON
+
+// File path for storing state
+const statePath = path.join(__dirname, "data", "state.json");
+
+// Ensure state.json exists
+if (!fs.existsSync(statePath)) {
+  fs.writeFileSync(statePath, JSON.stringify({ tokens: [], landStakings: [] }, null, 2));
+}
+
+// POST /api/state: Save state to file
+app.post("/api/state", (req, res) => {
+  try {
+    const state = req.body;
+    fs.writeFileSync(statePath, JSON.stringify(state, null, 2), "utf8");
+    res.json({ success: true, message: "State saved successfully!" });
+  } catch (error) {
+    console.error("Error saving state:", error.message);
+    res.status(500).json({ error: "Failed to save state." });
+  }
+});
+
+// GET /api/state: Retrieve state from file
+app.get("/api/state", (req, res) => {
+  try {
+    const state = JSON.parse(fs.readFileSync(statePath, "utf8"));
+    res.json(state);
+  } catch (error) {
+    console.error("Error loading state:", error.message);
+    res.status(500).json({ error: "Failed to load state." });
+  }
+});
+
+// Start the server
+const PORT = process.env.PORT || 3001;
+app.listen(PORT, () => {
+  console.log(`Server running at http://localhost:${PORT}`);
+});

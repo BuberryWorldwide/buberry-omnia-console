@@ -1,1 +1,293 @@
-[]
+{
+  "tokens": [
+    {
+      "token_id": "0.0.5341855",
+      "balance": 2,
+      "metadata": {
+        "name": "Buberry World Founders Card",
+        "creator": "Buberry Worldwide",
+        "description": "The first-ever NFT in the Buberry World series, representing the foundation of a revolutionary initiative. This unique ASCII artwork card symbolizes the origins of Buberry and provides gameplay bonuses in future releases.",
+        "image": "https://ipfs.io/ipfs/bafybeial7je4d3pattwldeo46b2ffdqabghgaigvnx3dyx3zlxsmjkrh7i/founders-card.png",
+        "type": "image/png",
+        "files": [
+          {
+            "uri": "https://ipfs.io/ipfs/bafybeial7je4d3pattwldeo46b2ffdqabghgaigvnx3dyx3zlxsmjkrh7i/founders-card.png",
+            "is_default_file": true,
+            "type": "image/png"
+          }
+        ],
+        "properties": {
+          "Artwork Type": "ASCII",
+          "Edition": "Founders Edition",
+          "Use Case": "Gameplay multiplier and collectible",
+          "Special Trait": "Historic Artifact",
+          "Created By": "Buberry Worldwide"
+        }
+      }
+    },
+    {
+      "token_id": "0.0.5363150",
+      "balance": 2,
+      "metadata": {
+        "version": "1.0.0",
+        "type": "Tree",
+        "name": "asd",
+        "description": "asd",
+        "properties": {
+          "Artwork Type": "Testttt",
+          "Edition": "poop",
+          "Use Case": "poop",
+          "Special Trait": "pooping",
+          "variety": "Apple",
+          "stage": "Sapling",
+          "water_consumption": 5,
+          "carbon_sequestration": 1
+        }
+      }
+    },
+    {
+      "token_id": "0.0.5363280",
+      "balance": 5,
+      "metadata": {
+        "version": "1.0.0",
+        "type": "Land",
+        "name": "Test Land Allowed Stakes",
+        "description": "Test Land Allowed Stakes",
+        "properties": {
+          "Artwork Type": "Test Land Allowed Stakes",
+          "Edition": "Test Land Allowed Stakes",
+          "Use Case": "Test Land Allowed Stakes",
+          "Special Trait": "Test Land Allowed Stakes",
+          "allowed_stakes": [
+            "Tree",
+            "Shrub",
+            "Crop",
+            "Structure",
+            "Livestock",
+            "Tool",
+            "Person"
+          ],
+          "biome": "Temperate",
+          "fertility": 5,
+          "water_availability": "Medium",
+          "degradation": 5,
+          "capacity": "6",
+          "boosts_from": "Test Land Allowed Stakes",
+          "actions": "Test Land Allowed Stakes"
+        }
+      }
+    },
+    {
+      "token_id": "0.0.5363962",
+      "balance": 9,
+      "metadata": {
+        "name": "Founders' Fertile Valley ",
+        "description": "A lush valley known for its fertile soil and abundant water resources. This region offers high potential for sustainable agriculture and experimental farming.",
+        "artwork_type": "ASCII",
+        "edition": "Special Edition",
+        "use_case": "Agricultural Development",
+        "special_trait": "High Fertility and Abundant Water",
+        "created_by": "Buberry Worldwide",
+        "image": "https://bafybeib6hybpbbntyyxbtnzjobp62evkx3lmzen5yad4trybda6kwf432a.ipfs.w3s.link/fertile_valley_resource.png",
+        "type": "Land",
+        "properties": {
+          "biome": "Temperate",
+          "fertility": 10,
+          "water_availability": "Abundant",
+          "degradation": 1,
+          "plots": 12,
+          "creator": "Buberry Worldwide"
+        }
+      }
+    },
+    {
+      "token_id": "0.0.5381027",
+      "balance": 2,
+      "metadata": {
+        "version": "1.0.0",
+        "type": "Tree",
+        "name": "Tree Card",
+        "description": "Tree Card",
+        "image": "",
+        "cardType": "Tree",
+        "properties": {
+          "Artwork Type": "",
+          "Edition": "",
+          "Use Case": "",
+          "Special Trait": "",
+          "variety": "Apple",
+          "stage": "Sapling",
+          "water_consumption": 5,
+          "carbon_sequestration": 1
+        }
+      }
+    },
+    {
+      "token_id": "0.0.5381385",
+      "balance": 1,
+      "metadata": {
+        "version": "1.0.0",
+        "date": "2025-01-13T09:02:47.418Z",
+        "name": "TestingMetadataNFTMintEtc",
+        "creator": "Buberry Worldwide",
+        "description": "TestingMetadataNFTMintEtc",
+        "image": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEUAAABoCAYAAACnvz3BAAABhWlDQ1BJQ0MgcHJvZmlsZQAAKJF9kT1Iw1AUhU9TtUUqDnYQcYhQnSwUFXHUKhShQqgVWnUweekfNGlIWlwcBdeCgz+LVQcXZ10dXAVB8AfEXXBSdJES70sKLWK88Hgf591zeO8+QGiUmWZ1xQBNr5qpRFzMZFfFwCt8CKIHMYzIzDLmJCkJz/q6p26quyjP8u77s/rUnMUAn0g8ywyzSrxBPL1ZNTjvE4dZUVaJz4nHTbog8SPXFZffOBccFnhm2Eyn5onDxGKhg5UOZkVTI54ijqiaTvlCxmWV8xZnrVxjrXvyF4Zy+soy12kNI4FFLEGCCAU1lFBGFVHadVIspOg87uEfcvwSuRRylcDIsYAKNMiOH/wPfs/Wyk9OuEmhOND9Ytsfo0BgF2jWbfv72LabJ4D/GbjS2/5KA5j5JL3e1iJHQP82cHHd1pQ94HIHGHwyZFN2JD8tIZ8H3s/om7LAwC3Qu+bOrXWO0wcgTbNK3gAHh8BYgbLXPd4d7Jzbvz2t+f0AZlJyoiKwKsEAAAAGYktHRAAFACAAAX7pQnkAAAAJcEhZcwAACxMAAAsTAQCanBgAAAAHdElNRQfpAQgHGRsRYZfEAAAAGXRFWHRDb21tZW50AENyZWF0ZWQgd2l0aCBHSU1QV4EOFwAAAn9JREFUeNrt3EtOwzAQBmB7CFSiaoWElB0LTsCOowA3QSzgIrDnEpSjcA+kNmZTHqpKaju25+nu4/Dxe2InTrwLLrhDzTvvFDUfhaIMKB1FAU4+imCc6SgCccqhCMKB4kcsjSwCRQAMVDsyYxioenSmMFC9B4Yw0KQXZjDQrCdGMNC0NyYw0LxHBjDgrBFBIZ4WvKQE+NCzIBSweMStKUSHkRVakigE02JJMRRDYY5CrK5YUgzFUAxFJgqhYmtJMRRDMRRDqdw6dmf89ypV6c4d76SE7c9Q6uPIqimFcOiglKwPE3FYJeX++tUn42T9f6isOWKS0mjPr455SiImsElJQxhdM9pIGJA6BKYcR+fa5wAMPgrWzoMRGFA1dHbafNPf0JunxKak5jnuOQf191Nmw9mKTlIopOSfc8FJynrxSLlm4SSFUkr2nBOQBUFMC5AFQbwq2t18VBQOKdn2C9RAjsLsDX/lUfu/klpYse8Eeud96yk0aZBt60hgEAKpU1MyQC4+r54oXX3KDh/mCSk7fIR9GaNDxSD6akuHlgzCr8xBEsT3b0Kbb/p36u8Q7i+0tWoEk/eS2xVIRm+we8NojWKfCvltJ8NyxfmjMt6SUQtFCEYZFGEYeShCEdJQlCDsTlw7tX9860uynOFjaflZ81lSbPjkXH00DyHUXQcs5ylK5yajNeV06F8sKdpnsrG7I+dDf6sVZHztoyEtySjSYUaeWNR7G4spSByKNJiIZ1osdiu2BElD4Q6T8NRTxH6SkiB5KNxgMp6LQ25HJ2H5QB4jc6OAzH0mE3dNlP2+AHOM8iiYOIX300CtsXwcFs+U6wZ+C2V+5+vLuxan+wUaGe163VInNQAAAABJRU5ErkJggg==",
+        "type": "image/png",
+        "files": [
+          {
+            "uri": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEUAAABoCAYAAACnvz3BAAABhWlDQ1BJQ0MgcHJvZmlsZQAAKJF9kT1Iw1AUhU9TtUUqDnYQcYhQnSwUFXHUKhShQqgVWnUweekfNGlIWlwcBdeCgz+LVQcXZ10dXAVB8AfEXXBSdJES70sKLWK88Hgf591zeO8+QGiUmWZ1xQBNr5qpRFzMZFfFwCt8CKIHMYzIzDLmJCkJz/q6p26quyjP8u77s/rUnMUAn0g8ywyzSrxBPL1ZNTjvE4dZUVaJz4nHTbog8SPXFZffOBccFnhm2Eyn5onDxGKhg5UOZkVTI54ijqiaTvlCxmWV8xZnrVxjrXvyF4Zy+soy12kNI4FFLEGCCAU1lFBGFVHadVIspOg87uEfcvwSuRRylcDIsYAKNMiOH/wPfs/Wyk9OuEmhOND9Ytsfo0BgF2jWbfv72LabJ4D/GbjS2/5KA5j5JL3e1iJHQP82cHHd1pQ94HIHGHwyZFN2JD8tIZ8H3s/om7LAwC3Qu+bOrXWO0wcgTbNK3gAHh8BYgbLXPd4d7Jzbvz2t+f0AZlJyoiKwKsEAAAAGYktHRAAFACAAAX7pQnkAAAAJcEhZcwAACxMAAAsTAQCanBgAAAAHdElNRQfpAQgHGRsRYZfEAAAAGXRFWHRDb21tZW50AENyZWF0ZWQgd2l0aCBHSU1QV4EOFwAAAn9JREFUeNrt3EtOwzAQBmB7CFSiaoWElB0LTsCOowA3QSzgIrDnEpSjcA+kNmZTHqpKaju25+nu4/Dxe2InTrwLLrhDzTvvFDUfhaIMKB1FAU4+imCc6SgCccqhCMKB4kcsjSwCRQAMVDsyYxioenSmMFC9B4Yw0KQXZjDQrCdGMNC0NyYw0LxHBjDgrBFBIZ4WvKQE+NCzIBSweMStKUSHkRVakigE02JJMRRDYY5CrK5YUgzFUAxFJgqhYmtJMRRDMRRDqdw6dmf89ypV6c4d76SE7c9Q6uPIqimFcOiglKwPE3FYJeX++tUn42T9f6isOWKS0mjPr455SiImsElJQxhdM9pIGJA6BKYcR+fa5wAMPgrWzoMRGFA1dHbafNPf0JunxKak5jnuOQf191Nmw9mKTlIopOSfc8FJynrxSLlm4SSFUkr2nBOQBUFMC5AFQbwq2t18VBQOKdn2C9RAjsLsDX/lUfu/klpYse8Eeud96yk0aZBt60hgEAKpU1MyQC4+r54oXX3KDh/mCSk7fIR9GaNDxSD6akuHlgzCr8xBEsT3b0Kbb/p36u8Q7i+0tWoEk/eS2xVIRm+we8NojWKfCvltJ8NyxfmjMt6SUQtFCEYZFGEYeShCEdJQlCDsTlw7tX9860uynOFjaflZ81lSbPjkXH00DyHUXQcs5ylK5yajNeV06F8sKdpnsrG7I+dDf6sVZHztoyEtySjSYUaeWNR7G4spSByKNJiIZ1osdiu2BElD4Q6T8NRTxH6SkiB5KNxgMp6LQ25HJ2H5QB4jc6OAzH0mE3dNlP2+AHOM8iiYOIX300CtsXwcFs+U6wZ+C2V+5+vLuxan+wUaGe163VInNQAAAABJRU5ErkJggg==",
+            "is_default_file": true,
+            "type": "image/png"
+          }
+        ],
+        "properties": {
+          "Artwork Type": "asd",
+          "Edition": "1",
+          "Use Case": "Test",
+          "Special Trait": "asd",
+          "stage": "Sapling",
+          "water_consumption": 10,
+          "carbon_sequestration": 2,
+          "yield": 2,
+          "Created By": "Buberry Worldwide"
+        },
+        "attributes": [
+          {
+            "trait_type": "Test",
+            "value": "TEst"
+          }
+        ]
+      }
+    }
+  ],
+  "landStakings": [
+    {
+      "instanceId": "3a0ba042-7ba6-44a4-b1d6-0dc283407592",
+      "land": {
+        "token_id": "0.0.5363280",
+        "balance": 5,
+        "metadata": {
+          "version": "1.0.0",
+          "type": "Land",
+          "name": "Test Land Allowed Stakes",
+          "description": "Test Land Allowed Stakes",
+          "properties": {
+            "Artwork Type": "Test Land Allowed Stakes",
+            "Edition": "Test Land Allowed Stakes",
+            "Use Case": "Test Land Allowed Stakes",
+            "Special Trait": "Test Land Allowed Stakes",
+            "allowed_stakes": [
+              "Tree",
+              "Shrub",
+              "Crop",
+              "Structure",
+              "Livestock",
+              "Tool",
+              "Person"
+            ],
+            "biome": "Temperate",
+            "fertility": 5,
+            "water_availability": "Medium",
+            "degradation": 5,
+            "capacity": "6",
+            "boosts_from": "Test Land Allowed Stakes",
+            "actions": "Test Land Allowed Stakes"
+          }
+        }
+      },
+      "plots": [
+        {
+          "token_id": "0.0.5363150"
+        },
+        {
+          "token_id": null
+        },
+        {
+          "token_id": null
+        },
+        {
+          "token_id": null
+        },
+        {
+          "token_id": null
+        },
+        {
+          "token_id": null
+        }
+      ]
+    },
+    {
+      "instanceId": "8bc3f19a-68e1-4531-8bd5-88b9f2ab27a7",
+      "land": {
+        "token_id": "0.0.5363962",
+        "balance": 9,
+        "metadata": {
+          "name": "Founders' Fertile Valley ",
+          "description": "A lush valley known for its fertile soil and abundant water resources. This region offers high potential for sustainable agriculture and experimental farming.",
+          "artwork_type": "ASCII",
+          "edition": "Special Edition",
+          "use_case": "Agricultural Development",
+          "special_trait": "High Fertility and Abundant Water",
+          "created_by": "Buberry Worldwide",
+          "image": "https://bafybeib6hybpbbntyyxbtnzjobp62evkx3lmzen5yad4trybda6kwf432a.ipfs.w3s.link/fertile_valley_resource.png",
+          "type": "Land",
+          "properties": {
+            "biome": "Temperate",
+            "fertility": 10,
+            "water_availability": "Abundant",
+            "degradation": 1,
+            "capacity": 12,
+            "creator": "Buberry Worldwide",
+            "allowed_stakes": [
+              "Tree",
+              "Shrub",
+              "Crop",
+              "Structure",
+              "Livestock",
+              "Tool",
+              "Person"
+            ]
+          }
+        }
+      },
+      "plots": [
+        {
+          "token_id": null
+        },
+        {
+          "token_id": null
+        },
+        {
+          "token_id": null
+        },
+        {
+          "token_id": null
+        },
+        {
+          "token_id": null
+        },
+        {
+          "token_id": null
+        },
+        {
+          "token_id": null
+        },
+        {
+          "token_id": null
+        },
+        {
+          "token_id": null
+        },
+        {
+          "token_id": null
+        },
+        {
+          "token_id": null
+        },
+        {
+          "token_id": null
+        }
+      ]
+    }
+  ]
+}

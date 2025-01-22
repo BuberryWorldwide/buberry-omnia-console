@@ -39,6 +39,41 @@ const writeJsonFile = (filePath, data) => {
   }
 };
 
+
+// Path for the state file
+const statePath = path.join(__dirname, "data", "state.json");
+
+// Ensure state file exists
+ensureFileExists(statePath);
+
+// --- Get State ---
+app.get("/api/state", (req, res) => {
+  try {
+    const state = readJsonFile(statePath);
+    res.json(state); // Respond with the state data
+  } catch (error) {
+    console.error("Error fetching state:", error.message);
+    res.status(500).json({ error: "Failed to fetch state." });
+  }
+});
+
+// --- Save State ---
+app.post("/api/state", (req, res) => {
+  try {
+    const state = req.body;
+    if (!state) {
+      return res.status(400).json({ error: "Invalid state data." });
+    }
+
+    writeJsonFile(statePath, state); // Save state to file
+    res.json({ success: true, message: "State saved successfully!" });
+  } catch (error) {
+    console.error("Error saving state:", error.message);
+    res.status(500).json({ error: "Failed to save state." });
+  }
+});
+
+
 // Paths for JSON files
 const nftRecordsPath = path.join(__dirname, "data", "nft_records.json");
 const stakingRecordsPath = path.join(__dirname, "data", "staking_records.json");

@@ -1,0 +1,16 @@
+{
+  "version": "1.0.0",
+  "type": "Tree",
+  "name": "asd",
+  "description": "asd",
+  "properties": {
+    "Artwork Type": "Testttt",
+    "Edition": "poop",
+    "Use Case": "poop",
+    "Special Trait": "pooping",
+    "variety": "Apple",
+    "stage": "Sapling",
+    "water_consumption": 5,
+    "carbon_sequestration": 1
+  }
+}

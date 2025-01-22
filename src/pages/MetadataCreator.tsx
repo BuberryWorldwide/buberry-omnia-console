@@ -29,16 +29,20 @@ const MetadataCreator: React.FC = () => {
   const [fieldValues, setFieldValues] = useState<Record<string, any>>({});
   const [errors, setErrors] = useState<Record<string, string>>({});
   const navigate = useNavigate();
+
   const handleNavigation = () => {
     navigate("/mdc-help");
   };
 
+  // Handle metadata type changes
   const handleMetadataTypeChange = (type: "NFT" | "FT") => {
     setMetadataType(type);
     setFields([]);
     setFieldValues({});
     setErrors({});
     setCardType("");
+    setName("");
+    setDescription("");
     setImageUrl("");
     setArtworkType("");
     setEdition("");
@@ -46,22 +50,92 @@ const MetadataCreator: React.FC = () => {
     setSpecialTrait("");
   };
 
+  // Handle card type changes
   const handleCardTypeChange = (type: string) => {
     setCardType(type);
     const schema = cardSchemas[type];
     if (schema) {
       setFields(schema.fields);
-      setFieldValues({});
+      const defaultValues: Record<string, any> = {};
+      schema.fields.forEach((field) => {
+        if (field.type === "select-multiple" && field.key === "plant_types_allowed") {
+          defaultValues[field.key] = schema.allowed_stakes || [];
+        }
+      });
+      if (type === "Land" && schema.allowed_stakes) {
+        defaultValues.allowed_stakes = schema.allowed_stakes;
+      }
+      setFieldValues(defaultValues);
       setErrors({});
     } else {
       console.error(`No schema found for card type: ${type}`);
     }
   };
 
+  // Handle changes in form fields
   const handleFieldChange = (key: string, value: any) => {
     setFieldValues((prev) => ({ ...prev, [key]: value }));
     setErrors((prev) => ({ ...prev, [key]: "" }));
   };
+
+  // Validate fields
+  const validateFields = (): boolean => {
+    const newErrors: Record<string, string> = {};
+
+    // Validate cardType for NFTs
+    if (metadataType === "NFT" && !cardType) {
+      newErrors.cardType = "Card Type is required for NFTs.";
+    }
+
+    // Validate all required fields
+    fields.forEach((field) => {
+      if (field.required && !fieldValues[field.key]) {
+        newErrors[field.key] = `${field.label} is required.`;
+      }
+    });
+
+    // Validate allowed_stakes for Land cards
+    if (
+      metadataType === "NFT" &&
+      cardType === "Land" &&
+      (!fieldValues.allowed_stakes || fieldValues.allowed_stakes.length === 0)
+    ) {
+      newErrors.allowed_stakes = "Allowed stakes are required for Land cards.";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  // Generate metadata
+  const generateMetadata = () => {
+    if (!validateFields()) {
+      alert("Please fill in all required fields.");
+      return;
+    }
+
+    const properties: Record<string, any> = {
+      "Artwork Type": artworkType || undefined,
+      "Edition": edition || undefined,
+      "Use Case": useCase || undefined,
+      "Special Trait": specialTrait || undefined,
+      ...fieldValues,
+    };
+
+    const metadataJson = {
+      version: "1.0.0",
+      ...(metadataType === "NFT" && { type: cardType }),
+      name,
+      description,
+      image: imageUrl || undefined,
+      properties,
+    };
+
+    setMetadata(metadataJson);
+    alert("Metadata generated successfully!");
+  };
+
+  // Render fields dynamically
   const renderField = (field: Field) => {
     const isRequired = field.required;
     const errorMessage = errors[field.key];
@@ -120,51 +194,7 @@ const MetadataCreator: React.FC = () => {
         );
     }
   };
-  const validateFields = (): boolean => {
-    const newErrors: Record<string, string> = {};
-    fields.forEach((field) => {
-      if (field.required && !fieldValues[field.key]) {
-        newErrors[field.key] = `${field.label} is required.`;
-      }
-    });
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-  
 
-  const generateMetadata = () => {
-    if (!validateFields()) {
-      alert("Please fill in all required fields.");
-      return;
-    }
-
-    const metadataJson = {
-      version: "1.0.0",
-      type: metadataType,
-      name,
-      description,
-      ...(metadataType === "NFT" && {
-        image: imageUrl,
-        cardType,
-        properties: {
-          "Artwork Type": artworkType,
-          "Edition": edition,
-          "Use Case": useCase,
-          "Special Trait": specialTrait,
-          ...fieldValues,
-        },
-      }),
-
-      ...(metadataType === "FT" && {
-        properties: {
-          ...fieldValues,
-        },
-      }),
-    };
-
-    setMetadata(metadataJson);
-    alert("Metadata generated successfully!");
-  };
   return (
     <Box sx={{ padding: "20px" }}>
       <Typography variant="h4" sx={{ marginBottom: "20px" }}>
@@ -173,114 +203,35 @@ const MetadataCreator: React.FC = () => {
 
       {/* Metadata Type Selector */}
       <FormControl fullWidth sx={{ marginBottom: "16px" }}>
-  <InputLabel>Metadata Type</InputLabel>
-  <Select
-    value={metadataType}
-    onChange={(e) => handleMetadataTypeChange(e.target.value as "NFT" | "FT")}
-  >
-    <MenuItem value="NFT">Non-Fungible Token (NFT)</MenuItem>
-    <MenuItem value="FT">Fungible Token (FT)</MenuItem>
-  </Select>
-</FormControl>
+        <InputLabel>Metadata Type</InputLabel>
+        <Select
+          value={metadataType}
+          onChange={(e) => handleMetadataTypeChange(e.target.value as "NFT" | "FT")}
+        >
+          <MenuItem value="NFT">Non-Fungible Token (NFT)</MenuItem>
+          <MenuItem value="FT">Fungible Token (FT)</MenuItem>
+        </Select>
+      </FormControl>
 
-{/* FT Metadata Fields */}
-{metadataType === "FT" && (
-  <>
-    {/* Basic Information */}
-    <TextField
-      label="Name *"
-      value={name}
-      onChange={(e) => setName(e.target.value)}
-      fullWidth
-      sx={{ marginBottom: "16px" }}
-    />
-    <TextField
-      label="Description *"
-      value={description}
-      onChange={(e) => setDescription(e.target.value)}
-      fullWidth
-      sx={{ marginBottom: "16px" }}
-    />
+      {/* Card Type Selector */}
+      {metadataType === "NFT" && (
+        <FormControl fullWidth sx={{ marginBottom: "16px" }}>
+          <InputLabel>Card Type *</InputLabel>
+          <Select
+            value={cardType}
+            onChange={(e) => handleCardTypeChange(e.target.value)}
+          >
+            {Object.keys(cardSchemas).map((type) => (
+              <MenuItem key={type} value={type}>
+                {type}
+              </MenuItem>
+            ))}
+          </Select>
+          {!cardType && <FormHelperText>Card Type is required.</FormHelperText>}
+        </FormControl>
+      )}
 
-    {/* Tokenomics */}
-    <FormControl fullWidth sx={{ marginBottom: "16px" }}>
-      <InputLabel>Supply Type *</InputLabel>
-      <Select
-        value={fieldValues.supplyType || ""}
-        onChange={(e) => handleFieldChange("supplyType", e.target.value)}
-      >
-        <MenuItem value="Finite">Finite</MenuItem>
-        <MenuItem value="Infinite">Infinite</MenuItem>
-      </Select>
-    </FormControl>
-    {fieldValues.supplyType === "Finite" && (
-      <TextField
-        label="Initial Supply *"
-        type="number"
-        value={fieldValues.initialSupply || ""}
-        onChange={(e) => handleFieldChange("initialSupply", Number(e.target.value))}
-        fullWidth
-        sx={{ marginBottom: "16px" }}
-      />
-    )}
-    <TextField
-      label="Decimal Places"
-      type="number"
-      value={fieldValues.decimalPlaces || ""}
-      onChange={(e) => handleFieldChange("decimalPlaces", Number(e.target.value))}
-      fullWidth
-      sx={{ marginBottom: "16px" }}
-    />
-
-    {/* Replenishment Effects */}
-    <FormControl fullWidth sx={{ marginBottom: "16px" }}>
-      <InputLabel>Category</InputLabel>
-      <Select
-        value={fieldValues.category || ""}
-        onChange={(e) => handleFieldChange("category", e.target.value)}
-      >
-        <MenuItem value="Food">Food</MenuItem>
-        <MenuItem value="Drink">Drink</MenuItem>
-        <MenuItem value="Special Consumable">Special Consumable</MenuItem>
-      </Select>
-    </FormControl>
-    <TextField
-      label="Energy Restored"
-      type="number"
-      value={fieldValues.energyRestored || ""}
-      onChange={(e) => handleFieldChange("energyRestored", Number(e.target.value))}
-      fullWidth
-      sx={{ marginBottom: "16px" }}
-    />
-    <TextField
-      label="Hydration Restored"
-      type="number"
-      value={fieldValues.hydrationRestored || ""}
-      onChange={(e) => handleFieldChange("hydrationRestored", Number(e.target.value))}
-      fullWidth
-      sx={{ marginBottom: "16px" }}
-    />
-    <TextField
-      label="Yield Bonus"
-      type="number"
-      value={fieldValues.yieldBonus || ""}
-      onChange={(e) => handleFieldChange("yieldBonus", Number(e.target.value))}
-      fullWidth
-      sx={{ marginBottom: "16px" }}
-    />
-    <TextField
-      label="Effect Duration (Turns)"
-      type="number"
-      value={fieldValues.duration || ""}
-      onChange={(e) => handleFieldChange("duration", Number(e.target.value))}
-      fullWidth
-      sx={{ marginBottom: "16px" }}
-    />
-  </>
-)}
-
-
-      {/* NFT-Specific Fields */}
+      {/* NFT Basic Fields */}
       {metadataType === "NFT" && (
         <>
           <TextField
@@ -332,22 +283,32 @@ const MetadataCreator: React.FC = () => {
             fullWidth
             sx={{ marginBottom: "16px" }}
           />
-          <FormControl fullWidth sx={{ marginBottom: "16px" }}>
-            <InputLabel>Card Type *</InputLabel>
-            <Select
-              value={cardType}
-              onChange={(e) => handleCardTypeChange(e.target.value)}
-            >
-              {Object.keys(cardSchemas).map((type) => (
-                <MenuItem key={type} value={type}>
-                  {type}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-          {fields.map(renderField)}
         </>
       )}
+
+      {/* Allowed Stakes for Land */}
+      {cardType === "Land" && (
+        <FormControl fullWidth sx={{ marginBottom: "16px" }}>
+          <InputLabel>Allowed Stakes *</InputLabel>
+          <Select
+            multiple
+            value={fieldValues.allowed_stakes || []}
+            onChange={(e) => handleFieldChange("allowed_stakes", e.target.value)}
+          >
+            {cardSchemas.Land.allowed_stakes?.map((stake) => (
+              <MenuItem key={stake} value={stake}>
+                {stake}
+              </MenuItem>
+            ))}
+          </Select>
+          {errors.allowed_stakes && (
+            <FormHelperText error>{errors.allowed_stakes}</FormHelperText>
+          )}
+        </FormControl>
+      )}
+
+      {/* Render Dynamic Fields */}
+      {fields.map(renderField)}
 
       {/* Buttons */}
       <Box display="flex" flexDirection="row" gap={2} mt={2}>

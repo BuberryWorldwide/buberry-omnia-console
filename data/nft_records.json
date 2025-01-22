@@ -16,15 +16,5 @@
       "fertility": 8,
       "water_availability": "Medium"
     }
-  },
-  {
-    "tokenId": "0.0.5381385",
-    "tokenName": "test222",
-    "tokenSymbol": "test222",
-    "tokenMemo": "im sorry testnet",
-    "tokenType": "NFT",
-    "supplyType": "Infinite",
-    "creationDate": "2025-01-13T07:22:48.061Z",
-    "id": "fc128747-69ef-4159-a636-3ad89eeb79d7"
   }
 ]
