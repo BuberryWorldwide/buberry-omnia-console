@@ -16,5 +16,35 @@
       "fertility": 8,
       "water_availability": "Medium"
     }
+  },
+  {
+    "tokenId": "0.0.5422325",
+    "tokenName": "Water Token",
+    "tokenSymbol": "BWFT-W",
+    "tokenMemo": "Water Tokens used as cost for staking plants.",
+    "tokenType": "FT",
+    "supplyType": "Infinite",
+    "creationDate": "2025-01-23T20:27:07.616Z",
+    "id": "429e320b-b4db-4142-94f9-68a0a54283fb"
+  },
+  {
+    "tokenId": "0.0.5422329",
+    "tokenName": "Carbon Points",
+    "tokenSymbol": "BWFT-CO",
+    "tokenMemo": "Carbon Points from staking staking plants. Conversion to Sustainability Tokens.",
+    "tokenType": "FT",
+    "supplyType": "Infinite",
+    "creationDate": "2025-01-23T20:28:44.990Z",
+    "id": "aa31e661-670e-425a-8fe3-9d9385877865"
+  },
+  {
+    "tokenId": "0.0.5422342",
+    "tokenName": "Sustainability Tokens",
+    "tokenSymbol": "BWFT-ST",
+    "tokenMemo": "Sustainability Tokens used for governance.",
+    "tokenType": "FT",
+    "supplyType": "Infinite",
+    "creationDate": "2025-01-23T20:31:20.414Z",
+    "id": "fa5fd514-10a1-4f13-92e9-d2428c5877c2"
   }
 ]

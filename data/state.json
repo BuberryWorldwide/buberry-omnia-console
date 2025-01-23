@@ -27,7 +27,7 @@
     },
     {
       "token_id": "0.0.5363150",
-      "balance": 2,
+      "balance": 3,
       "metadata": {
         "version": "1.0.0",
         "type": "Tree",
@@ -197,7 +197,7 @@
       },
       "plots": [
         {
-          "token_id": "0.0.5363150"
+          "token_id": null
         },
         {
           "token_id": null
