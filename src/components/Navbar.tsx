@@ -7,7 +7,13 @@ import {
   Menu,
   MenuItem,
   Typography,
+  IconButton,
+  Drawer,
+  List,
+  ListItem,
+  ListItemText,
 } from "@mui/material";
+import MenuIcon from "@mui/icons-material/Menu";
 import { NavLink } from "react-router-dom";
 import HBARLogo from "../assets/omnia_ascii_logo.png";
 import { useWalletInterface } from "../services/wallets/useWalletInterface";
@@ -30,6 +36,7 @@ export default function NavBar() {
     carbon: 0,
     sustainability: 0,
   });
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   const handleConnect = async () => {
     if (accountId) {
@@ -52,20 +59,20 @@ export default function NavBar() {
       console.warn("Account ID is null. Cannot fetch token balances.");
       return;
     }
-  
+
     try {
       const mirrorNodeClient = new MirrorNodeClient(appConfig.networks.testnet);
       const accountBalances = await mirrorNodeClient.getAccountTokenBalancesWithTokenInfo(
-        AccountId.fromString(accountId) // Ensure accountId is not null
+        AccountId.fromString(accountId)
       );
-  
+
       const waterBalance =
         accountBalances.find((b) => b.token_id === waterTokenId)?.balance || 0;
       const carbonBalance =
         accountBalances.find((b) => b.token_id === carbonTokenId)?.balance || 0;
       const sustainabilityBalance =
         accountBalances.find((b) => b.token_id === sustainabilityTokenId)?.balance || 0;
-  
+
       setTokenBalances({
         water: waterBalance,
         carbon: carbonBalance,
@@ -75,7 +82,6 @@ export default function NavBar() {
       console.error("Error fetching token balances:", error);
     }
   };
-  
 
   useEffect(() => {
     if (accountId) {
@@ -86,61 +92,65 @@ export default function NavBar() {
     }
   }, [accountId]);
 
+  const toggleMobileMenu = () => {
+    setMobileOpen(!mobileOpen);
+  };
+
   return (
-    <AppBar position="relative" sx={{ backgroundColor: "#000000", padding: "4px" }}>
-      <Toolbar
-        sx={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        {/* Logo */}
-        <Box sx={{ display: "flex", alignItems: "center" }}>
-          <img src={HBARLogo} alt="Logo" className="hbarLogoImg" style={{ height: "50px" }} />
-        </Box>
-
-        {/* Centered Navigation */}
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            padding: "8px 16px",
-            borderRadius: "8px",
-            margin: "auto",
-            maxWidth: "80%",
-          }}
-        >
-          <Button component={NavLink} to="/" sx={buttonLinkStyles}>
-            Home
-          </Button>
-          <Button component={NavLink} to="/about" sx={buttonLinkStyles}>
-            About
-          </Button>
-          <Button component={NavLink} to="/balance" sx={buttonLinkStyles}>
-            Token Management
-          </Button>
-          <Button component={NavLink} to="/nfts" sx={buttonLinkStyles}>
-            Card Vault
-          </Button>
-          <Button component={NavLink} to="/staking" sx={buttonLinkStyles}>
-            Staking Panel
-          </Button>
-        </Box>
-
-        {/* Token Balances */}
-        {accountId && (
-          <Box sx={{ display: "flex", alignItems: "center", marginRight: "16px" }}>
-            <Typography sx={{ marginRight: "16px", color: "#00FF00", fontFamily: "Courier New, monospace" }}>
-              Water: {tokenBalances.water} | Carbon: {tokenBalances.carbon} | Sustainability:{" "}
-              {tokenBalances.sustainability}
-            </Typography>
+    <>
+      <AppBar position="relative" sx={{ backgroundColor: "#000000", padding: "4px" }}>
+        <Toolbar sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          {/* Logo */}
+          <Box sx={{ display: "flex", alignItems: "center" }}>
+            <img src={HBARLogo} alt="Logo" className="hbarLogoImg" style={{ height: "50px" }} />
           </Box>
-        )}
 
-        {/* Wallet Connect Button */}
-        <Box sx={{ display: "flex", alignItems: "center" }}>
+          {/* Desktop Navigation (Hidden on Small Screens) */}
+          <Box
+            sx={{
+              display: { xs: "none", md: "flex" },
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <Button component={NavLink} to="/" sx={buttonLinkStyles}>
+              Home
+            </Button>
+            <Button component={NavLink} to="/about" sx={buttonLinkStyles}>
+              About
+            </Button>
+            <Button component={NavLink} to="/balance" sx={buttonLinkStyles}>
+              Token Management
+            </Button>
+            <Button component={NavLink} to="/nfts" sx={buttonLinkStyles}>
+              Card Vault
+            </Button>
+            <Button component={NavLink} to="/staking" sx={buttonLinkStyles}>
+              Staking Panel
+            </Button>
+          </Box>
+
+          {/* Mobile Menu Icon */}
+          <IconButton
+            edge="start"
+            color="inherit"
+            aria-label="menu"
+            sx={{ display: { xs: "block", md: "none" } }}
+            onClick={toggleMobileMenu}
+          >
+            <MenuIcon />
+          </IconButton>
+
+          {/* Token Balances (Hidden on Mobile) */}
+          {accountId && (
+            <Box sx={{ display: { xs: "none", md: "flex" }, alignItems: "center", marginRight: "16px" }}>
+              <Typography sx={{ marginRight: "16px", color: "#00FF00", fontFamily: "Courier New, monospace" }}>
+                Water: {tokenBalances.water} | Carbon: {tokenBalances.carbon} | Sustainability: {tokenBalances.sustainability}
+              </Typography>
+            </Box>
+          )}
+
+          {/* Wallet Connect Button */}
           <Button
             variant="contained"
             sx={{
@@ -158,20 +168,12 @@ export default function NavBar() {
             <>
               <Button
                 variant="outlined"
-                sx={{
-                  marginLeft: "16px",
-                  backgroundColor: "#FFFFFF",
-                  color: "#000",
-                }}
+                sx={{ marginLeft: "16px", backgroundColor: "#FFFFFF", color: "#000" }}
                 onClick={handleDropdownOpen}
               >
                 Treasury Menu
               </Button>
-              <Menu
-                anchorEl={anchorEl}
-                open={Boolean(anchorEl)}
-                onClose={handleDropdownClose}
-              >
+              <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleDropdownClose}>
                 <MenuItem component={NavLink} to="/metadata-creator">
                   Metadata Creator
                 </MenuItem>
@@ -187,11 +189,34 @@ export default function NavBar() {
               </Menu>
             </>
           )}
-        </Box>
-      </Toolbar>
+        </Toolbar>
 
-      <WalletSelectionDialog open={open} setOpen={setOpen} onClose={() => setOpen(false)} />
-    </AppBar>
+        <WalletSelectionDialog open={open} setOpen={setOpen} onClose={() => setOpen(false)} />
+      </AppBar>
+
+      {/* Mobile Drawer */}
+      <Drawer anchor="left" open={mobileOpen} onClose={toggleMobileMenu}>
+        <Box sx={{ width: 250 }}>
+          <List>
+            <ListItem button component={NavLink} to="/" onClick={toggleMobileMenu}>
+              <ListItemText primary="Home" />
+            </ListItem>
+            <ListItem button component={NavLink} to="/about" onClick={toggleMobileMenu}>
+              <ListItemText primary="About" />
+            </ListItem>
+            <ListItem button component={NavLink} to="/balance" onClick={toggleMobileMenu}>
+              <ListItemText primary="Token Management" />
+            </ListItem>
+            <ListItem button component={NavLink} to="/nfts" onClick={toggleMobileMenu}>
+              <ListItemText primary="Card Vault" />
+            </ListItem>
+            <ListItem button component={NavLink} to="/staking" onClick={toggleMobileMenu}>
+              <ListItemText primary="Staking Panel" />
+            </ListItem>
+          </List>
+        </Box>
+      </Drawer>
+    </>
   );
 }
 
@@ -206,14 +231,9 @@ const buttonLinkStyles = {
   borderRadius: "4px",
   padding: "6px 12px",
   backgroundColor: "rgba(0, 0, 0, 0.8)",
-  transition: "transform 0.1s ease, font-size 0.1s ease",
   "&.active": {
     textDecoration: "underline",
     color: "#00CC00",
   },
-  "&:hover": {
-    transform: "scale(0.9)",
-    fontSize: "0.9rem",
-    backgroundColor: "rgba(0, 0, 0, 0.6)",
-  },
 };
+
